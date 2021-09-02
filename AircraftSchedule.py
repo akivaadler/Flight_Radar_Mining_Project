@@ -1,4 +1,6 @@
 class AircraftSchedule:
+    """Builds class that contains the schedule of individual planes in an airline. std is
+    scheduled time departure, atd is actual time departure, sta is scheduled time arrival"""
     def __init__(self, date, origin, destination, flight_num, flight_time, std, atd, sta, status):
         self.date = date
         self.origin = origin
