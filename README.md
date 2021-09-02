@@ -1,4 +1,4 @@
-# Flight_Radar_Mining_Project
+# FlightRadar Mining Project
 
 **Authors**
 
@@ -7,15 +7,15 @@
 
 **Overview**
 
-The airline idustry is a complex system. Airlines, aicraft, airports, and many other elements are required to work together in order to make the whole system work. [FlightRadar](https://www.flightradar24.com/31.78,35.23/3) is a website that not only presents the web of global flights in real time, but it also stores lots of data about different aircraft and airlines. We wanted to scrape this data from the website in order to use the data downstream. 
+The airline industry is a complex system. Airlines, aicraft, airports, and many other elements are required to sync together in order to make the whole system work. This system creates significant amounts of data every day. [FlightRadar](https://www.flightradar24.com/31.78,35.23/3) is a website that not only presents the web of global flights in real time, but it also stores lots of data about different aircraft and airlines. We wanted to scrape this data from the website in order to gain insight into the air travel industry. 
 
 **What We Did**
 
-Our approach was to build individual class for each set of data, and then consolidate them into instances of the class Airline, which contains the name of the airline, the airline code, the number of aircraft in the airlines' fleet, details about the fleet, the different routes the airlines run, and reviews that users posted about the airline. We printed each Airline instance into a text file. 
+Our approach was to build individual class for each set of data, and then consolidate them into instances of the class Airline, which contain the name of the airline, the airline code, the number of aircraft in each airline's fleet, specific details about the fleet, the different routes the airlines run, and reviews that users posted about the airline. We printed each Airline instance into a text file. 
 
 **Some Things We Learned**
 
-1. To work with Selenium.
+1. The ins and outs of Selenium.
 2. How to work on code as a team.
 3. The power of googling.
 4. How to maneuver Git and Github.
