@@ -57,8 +57,6 @@ def main(driver):
     # The following line gets a list of links where each link is a specific airline's home page
     airlines_links = [td.find_element_by_tag_name("a").get_attribute("href") for td in airlines_tds]
 
-    airline_list = []
-    airlines_txt = ''
     for airline_index, airline_link in enumerate(airlines_links):
         # click airline_link
         driver.get(airline_link)
@@ -129,16 +127,11 @@ def main(driver):
             routes_list.append(Route(airport1, airport2))
 
         airline = Airline(airline_name, airline_code, aircraft_count, routes_list, fleet, review_list)
-        airline_list.append(airline)
-        airlines_txt += f'@\n{airline}'
-        f = open('airlines.txt2', 'a+')
+
+        f = open('airlines.txt', 'a+')
         f.write(f'@\n{airline}')
         f.close()
-    print(airline_list)
 
-    f = open('airlines.txt', 'w+')
-    f.write(airlines_txt)
-    f.close()
 
 
 if __name__ == '__main__':
