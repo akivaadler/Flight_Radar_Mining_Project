@@ -7,7 +7,7 @@
 
 **Overview**
 
-The airline industry is a complex system. Airlines, aicraft, airports, and many other elements are required to sync together in order to make the whole system work. This system creates significant amounts of data every day. [FlightRadar](https://www.flightradar24.com/31.78,35.23/3) is a website that not only presents the web of global flights in real time, but it also stores lots of data about different aircraft and airlines. We wanted to scrape this data from the website in order to gain insight into the air travel industry. 
+The airline industry is a complex system. Airlines, aicraft, airports, and many other elements are required to sync together in order to make the whole system work. This system creates significant amounts of data every day. [FlightRadar](https://www.flightradar24.com/31.78,35.23/3) is a website that not only presents the web of global flights in real time, but it also stores lots of data about different aircraft and airlines. We wanted to scrape this data from the website in order to gain insight into the air travel industry.   
 
 **What We Did**
 
