@@ -2,7 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import os
+import chromedriver_autoinstaller
 import time
 
 from Airline import Airline
@@ -12,7 +12,6 @@ from Fleet import Fleet
 from Airport import Airport
 from Route import Route
 
-PATH = os.path.join("C:", os.path.sep, "Program Files (x86)", "chromedriver.exe")
 WAIT_TIME = 30
 
 
@@ -57,7 +56,7 @@ def main(driver):
     # The following line gets a list of links where each link is a specific airline's home page
     airlines_links = [td.find_element_by_tag_name("a").get_attribute("href") for td in airlines_tds]
 
-    for airline_index, airline_link in enumerate(airlines_links):
+    for airline_index, airline_link in enumerate(airlines_links[0:2]):
         # click airline_link
         driver.get(airline_link)
 
@@ -133,9 +132,9 @@ def main(driver):
         f.close()
 
 
-
 if __name__ == '__main__':
-    chrome_driver = webdriver.Chrome(PATH)
+    chromedriver_autoinstaller.install()
+    chrome_driver = webdriver.Chrome()
     chrome_driver.implicitly_wait(WAIT_TIME)
     chrome_driver.get("https://www.flightradar24.com/data/airlines")
     try:
