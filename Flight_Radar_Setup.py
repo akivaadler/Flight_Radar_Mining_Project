@@ -51,8 +51,8 @@ def get_chromedriver():
     return chrome_driver
 
 
-def get_all_airline_a_tags(driver):
-    chrome_driver.get("https://www.flightradar24.com/data/airlines")
+def get_all_airline_links_and_names(driver):
+    driver.get("https://www.flightradar24.com/data/airlines")
     time.sleep(1)
 
     # Accesses the data table of the website
@@ -65,19 +65,25 @@ def get_all_airline_a_tags(driver):
     # The following line gets a list of a tags.
     a_tags = [td.find_element_by_tag_name("a") for td in airlines_tds]
 
-    return a_tags
+    airline_links = [a_tag.get_attribute("href") for a_tag in a_tags]
+    airline_names = [a_tag.get_attribute("title") for a_tag in a_tags]
 
-def get_all_airline_links(driver):
-    a_tags = get_all_airline_a_tags(driver)
-    return [a_tag.get_attribute("href") for a_tag in a_tags]
+    return airline_links, airline_names
 
-def get_airline_names(driver):
-    a_tags = get_all_airline_a_tags(driver)
-    return [a_tag.get_attribute("title") for a_tag in a_tags]
+# def get_all_airline_links(driver):
+#     a_tags = get_all_airline_a_tags(driver)
+#     return [a_tag.get_attribute("href") for a_tag in a_tags],
+#
+#
+# def get_airline_names(driver):
+#     a_tags = get_all_airline_a_tags(driver)
+#     return [a_tag.get_attribute("title") for a_tag in a_tags]
 
-def get_requested_airline_links(driver, request):
-    airlines_links = get_all_airline_links(driver)
-    airlines_names = get_airline_names(driver)
+
+def get_requested_airline_links(driver, request=(0,2)):
+    # airlines_links = get_all_airline_links(driver)
+    # airlines_names = get_airline_names(driver)
+    airlines_links, airlines_names = get_all_airline_links_and_names(driver)
     requested_airline_links = []
     if isinstance(request, list):
         if all(isinstance(element, int) for element in request):
@@ -164,16 +170,24 @@ def get_routes(driver, routes_link):
 
     return routes_list
 
-def get_airline(driver, routes_link, fleet_link, reviews_link, airline_name, airline_code):
+
+def get_airline(driver, airline_link):
+    driver.get(airline_link)
+    time.sleep(1)
+
+    airline_name = (wait_for_and_get_element(driver, 'xpath', '//*[@id="cnt-data-content"]/header/div/div[1]/div[2]/h1')).text
+    airline_code = (wait_for_and_get_element(driver, 'xpath', '//*[@id="cnt-data-content"]/header/div/div[1]/div[1]/h2')).text
+
+    review_link, fleet_link, routes_link = get_airline_tabs(driver, airline_link)
+
     fleet = get_fleet(driver, fleet_link)
     routes = get_routes(driver, routes_link)
-    reviews = get_reviews(driver, reviews_link)
-    num_aircraft = fleet.get_number_of_aircraft()
+    reviews = get_reviews(driver, review_link)
 
-    return Airline(airline_name, airline_code, num_aircraft, routes, fleet, reviews)
+    return Airline(airline_name, airline_code, routes, fleet, reviews)
 
 
-def get_airline_tabs(driver, airline_link, choice):
+def get_airline_tabs(driver, airline_link):
     #for airline_index, airline_link in enumerate(airlines_links[0:2]):
         # click airline_link
     driver.get(airline_link)
@@ -193,9 +207,20 @@ def get_airline_tabs(driver, airline_link, choice):
     fleet_link = airline_tabs_links[2]
     routes_link = airline_tabs_links[3]
 
+    return review_link, fleet_link, routes_link
+
+
+def get_airline_info(driver, airline_link, choice):
+
     if not isinstance(choice, str):
         raise TypeError('Please enter one of the following: "fleet", "route", "review", or "airline"')
 
+    possible_choices = ['fleet', 'route', 'review', 'airline']
+
+    if choice not in possible_choices:
+        raise ValueError(f'The choice {choice} is not in the possible choices, which are: {possible_choices}')
+
+    review_link, fleet_link, routes_link = get_airline_tabs(driver, airline_link)
 
     if 'fleet' == choice:
         return get_fleet(driver, fleet_link)
@@ -206,10 +231,46 @@ def get_airline_tabs(driver, airline_link, choice):
     if 'review' == choice:
         return get_reviews(driver, review_link)
 
-    # if 'airline' == choice:
-    #     return get_airline(driver, routes_link, )
-    #TODO change get_airline to be able to only take airline link instead of the separate links
+    if 'airline' == choice:
+        return get_airline(driver, airline_link)
 
+
+def get_args(parser):
+    args_dict = vars(parser.parse_args())
+    arg_list = []
+    for key, value in args_dict.items():
+        if key == 'range' and value is not None:
+            value = tuple(value)
+        if value is not None:
+            arg_list.append(value)
+
+    return arg_list
+
+
+def cli_main():
+
+    possible_choices = ['fleet', 'route', 'review', 'airline']
+
+    parser = argparse.ArgumentParser(description='Scrape some airline data')
+    group = parser.add_mutually_exclusive_group(required=True)
+
+    parser.add_argument('choice', metavar='choice', type=str,
+                        help='specific info about an airline', choices=possible_choices)
+    group.add_argument('-indexes', metavar='index', type=int, nargs='+',
+                        help='indexes for which airline')
+    group.add_argument('-names', metavar='name', type=str, nargs='+',
+                        help='names for which airline')
+    group.add_argument('-range', metavar='N', type=int, nargs=2,
+                        help='range for which airlines')
+
+    #print('steve', parser.parse_args())
+    driver = get_chromedriver()
+    choice, request = get_args(parser)
+    links = get_requested_airline_links(driver, request)
+    for link in links:
+        print(get_airline_info(driver, link, choice))
+
+    driver.quit()
 
 
 
@@ -307,28 +368,28 @@ def my_sum(a):
 
 
 if __name__ == '__main__':
-
+    cli_main()
     # CLI Wrapper Functionality
     # - Choice of type of data (fleet, review, routes, airport, or all)
     # - Define number of airlines to return/range of airline indexes
     # - Choose specific airline
 
-    parser = argparse.ArgumentParser(description='Scrape some data')
-    parser.add_argument('integers', metavar='N', type=int, nargs='+',
-                        help='an integer for the accumulator')
-    parser.add_argument('--sum', dest='accumulate', action='store_const',
-                        const=my_sum, default=max,
-                        help='sum the integers (default: find the max)')
-    parser.add_argument('--airline', dest='content', action='store_const',
-                        const=my_sum, default=min, nargs='+', type=str,
-                        help='sum the integers (default: find the max)')
-
-    args = parser.parse_args()
-    print(args.content(args.integers))
-
-
-    chrome_driver = get_chromedriver()
-    chrome_driver.get("https://www.flightradar24.com/data/airlines")
+    # parser = argparse.ArgumentParser(description='Scrape some data')
+    # parser.add_argument('integers', metavar='N', type=int, nargs='+',
+    #                     help='an integer for the accumulator')
+    # parser.add_argument('--sum', dest='accumulate', action='store_const',
+    #                     const=my_sum, default=max,
+    #                     help='sum the integers (default: find the max)')
+    # parser.add_argument('--airline', dest='content', action='store_const',
+    #                     const=my_sum, default=min, nargs='+', type=str,
+    #                     help='sum the integers (default: find the max)')
+    #
+    # args = parser.parse_args()
+    # print(args.content(args.integers))
+    #
+    #
+    # chrome_driver = get_chromedriver()
+    # chrome_driver.get("https://www.flightradar24.com/data/airlines")
     # try:
     #     main(chrome_driver)
     # finally:

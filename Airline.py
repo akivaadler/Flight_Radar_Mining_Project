@@ -1,9 +1,9 @@
 class Airline:
     """Builds class that contains information about individual airlines"""
-    def __init__(self, name, code, num_aircraft, routes, fleet, reviews):
+    def __init__(self, name, code, routes, fleet, reviews):
         self.name = name
         self.code = code
-        self.num_aircraft = num_aircraft
+        self.num_aircraft = fleet.get_number_of_aircraft()
         self.routes = routes
         self.fleet = fleet
         self.reviews = reviews
