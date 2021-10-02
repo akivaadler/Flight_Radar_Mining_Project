@@ -101,11 +101,12 @@ def get_requested_airline_links(driver, request=(0,2)):
     elif isinstance(request, tuple):
         if len(request) != 2:
             raise ValueError(f'Please enter a range of two numbers')
-        elif isinstance(request[0], int) and isinstance(request[1], int):
+        elif not isinstance(request[0], int) and not isinstance(request[1], int):
+        #elif isinstance(request[0], int) and isinstance(request[1], int):
             raise TypeError(f'Range of numbers must be integers and not {request[0]} or {request[1]}')
         elif request[0] > request[1] or request[0] < 0 or request[1] >= len(airlines_links):
             raise ValueError(f'Please enter an acceptable range between 0 and {len(airlines_links) -1}')
-
+        requested_airline_links = airlines_links[request[0]:request[1]+1]
     else:
         raise TypeError(f'Please use a correct way of requesting airlines.')
 
@@ -188,8 +189,6 @@ def get_airline(driver, airline_link):
 
 
 def get_airline_tabs(driver, airline_link):
-    #for airline_index, airline_link in enumerate(airlines_links[0:2]):
-        # click airline_link
     driver.get(airline_link)
     time.sleep(1)
 
@@ -265,12 +264,23 @@ def cli_main():
 
     #print('steve', parser.parse_args())
     driver = get_chromedriver()
-    choice, request = get_args(parser)
-    links = get_requested_airline_links(driver, request)
-    for link in links:
-        print(get_airline_info(driver, link, choice))
+    try:
 
-    driver.quit()
+        choice, request = get_args(parser)
+        links = get_requested_airline_links(driver, request)
+        for link in links:
+            print(get_airline_info(driver, link, choice))
+    except (ValueError, TypeError, IndexError) as e:
+        print(e)
+    finally:
+        driver.quit()
+    #TODO check range as input
+    #TODO check list of indexes as input
+    #TODO add name of output airline
+    #TODO add note if empty list
+    #TODO error needs to close the window also
+
+
 
 
 
