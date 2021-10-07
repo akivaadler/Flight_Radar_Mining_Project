@@ -13,6 +13,8 @@ from Fleet import Fleet
 from Airport import Airport
 from Route import Route
 
+from db_connection import *
+
 WAIT_TIME = 30
 
 
@@ -264,12 +266,26 @@ def cli_main():
 
     #print('steve', parser.parse_args())
     driver = get_chromedriver()
+    result_list = []
     try:
-
         choice, request = get_args(parser)
         links = get_requested_airline_links(driver, request)
-        for link in links:
-            print(get_airline_info(driver, link, choice))
+        cur = get_connection()
+
+        for index, link in enumerate(links):
+            result_list.append(get_airline_info(driver, link, choice))
+            print(result_list[index])
+
+        # TODO add airline_id to the different classes
+        # TODO write function/ try & excep that builds an SQL query based on "choice" & "request" in order to determine if already in DB
+        # TODO or do try and except for the insert command, and that resolves the need for a function with 12 if's
+
+        query_dict = {}
+        execute_and_display(cur, )
+
+
+
+
     except (ValueError, TypeError, IndexError) as e:
         print(e)
     finally:
@@ -379,29 +395,3 @@ def my_sum(a):
 
 if __name__ == '__main__':
     cli_main()
-    # CLI Wrapper Functionality
-    # - Choice of type of data (fleet, review, routes, airport, or all)
-    # - Define number of airlines to return/range of airline indexes
-    # - Choose specific airline
-
-    # parser = argparse.ArgumentParser(description='Scrape some data')
-    # parser.add_argument('integers', metavar='N', type=int, nargs='+',
-    #                     help='an integer for the accumulator')
-    # parser.add_argument('--sum', dest='accumulate', action='store_const',
-    #                     const=my_sum, default=max,
-    #                     help='sum the integers (default: find the max)')
-    # parser.add_argument('--airline', dest='content', action='store_const',
-    #                     const=my_sum, default=min, nargs='+', type=str,
-    #                     help='sum the integers (default: find the max)')
-    #
-    # args = parser.parse_args()
-    # print(args.content(args.integers))
-    #
-    #
-    # chrome_driver = get_chromedriver()
-    # chrome_driver.get("https://www.flightradar24.com/data/airlines")
-    # try:
-    #     main(chrome_driver)
-    # finally:
-    #     chrome_driver.quit()
-
