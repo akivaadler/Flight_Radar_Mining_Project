@@ -31,6 +31,6 @@ cur = get_connection()
 execute_and_display(cur, q1)
 execute_and_display(cur, q2)
 
-
-def get_query(choice, request):
-    if choice ==
+#
+# def get_query(choice, request):
+#     if choice ==

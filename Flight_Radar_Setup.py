@@ -276,12 +276,17 @@ def cli_main():
             result_list.append(get_airline_info(driver, link, choice))
             print(result_list[index])
 
+            result_item = get_airline_info(driver, link, choice)
+            for result in result_item:
+                for index, review in enumerate(result):
+                    print(index, review) #add iterators to classes into order to "grab" them individually?
+
         # TODO add airline_id to the different classes
         # TODO write function/ try & excep that builds an SQL query based on "choice" & "request" in order to determine if already in DB
         # TODO or do try and except for the insert command, and that resolves the need for a function with 12 if's
-
-        query_dict = {}
-        execute_and_display(cur, )
+            #cur.execute('INSERT INTO table_name VALUES (?,?,?,?)', )
+        # query_dict = {}
+        # execute_and_display(cur, )
 
 
 
