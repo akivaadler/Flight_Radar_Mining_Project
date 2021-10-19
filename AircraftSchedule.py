@@ -14,3 +14,7 @@ class AircraftSchedule:
 
     def __str__(self):
         return f'Aircraft_Schedule: {str(self.__dict__)}'
+
+    #This is a test
+    def test(self):
+        self.a = self.date
